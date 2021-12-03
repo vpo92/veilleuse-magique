@@ -42,6 +42,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define MENU_DAY       1
 #define MENU_NIGHT     2
 #define MENU_TIME      3
+#define MENU_IDLE      4
 
 
 /* Broches */
@@ -109,7 +110,7 @@ void setup() {
   pinMode(PIN_BTN_UP, INPUT_PULLUP);
   pinMode(PIN_BTN_DOWN, INPUT_PULLUP);
   pinMode(PIN_BTN_OK, INPUT_PULLUP);
-  //drawTime();
+
 }
 
 void loop() {
@@ -123,14 +124,11 @@ void loop() {
        Serial.println("push up");
        upPush = true;
        btnUpState = 0;
-       //menuUp();
-       
     //DOWN
     }else if(digitalRead(PIN_BTN_DOWN)==0 && btnDownState == 1){
        Serial.println("push down");
        downPush = true;
        btnDownState = 0;
-       //menuDown();
     //OK
     }else if(digitalRead(PIN_BTN_OK)==0 && btnOkState == 1){
        Serial.println("push ok");
@@ -157,6 +155,7 @@ void loop() {
     //APP Logik
     switch(currentMenu){
 
+      case MENU_IDLE:
       case MENU_HOME:
         if(upPush){
           menuUp();
@@ -290,6 +289,9 @@ void loop() {
         //drawNight(nH,nM,currentCursor);
         drawTimeDetail("N", nH,nM,currentCursor);
         break;
+      case MENU_IDLE :
+        drawIdle();
+        break;
     }
     
     delay(50);
@@ -334,13 +336,13 @@ void saveTime(){
 
 
 void menuUp(){
-  currentMenu = (currentMenu+1)%4;
+  currentMenu = (currentMenu+1)%5;
   cursorReset();
 }
 
 void menuDown(){
   if(currentMenu == 0){
-          currentMenu = 3;
+          currentMenu = 4;
   }else{
           currentMenu = (currentMenu-1); 
   }
@@ -496,6 +498,11 @@ void drawTimeDetail(String type, int h, int m, int currentCursor){
     display.drawLine(82,26,104,26,SSD1306_WHITE);  
   }
 
+  display.display();
+}
+
+void drawIdle(){
+  display.clearDisplay();
   display.display();
 }
 /**
